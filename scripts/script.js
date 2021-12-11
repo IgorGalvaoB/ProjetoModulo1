@@ -5,31 +5,31 @@ const PIECES =
         //Peças L:
         [
             [1,0,0],
-            [1,0,0],
-            [1,1,0],
+            [1,1,1],
+            [0,0,0],
         ],
         [
             [0,0,1],
-            [0,0,1],
-            [0,1,1],
+            [1,1,1],
+            [0,0,0],
         ],
         //Peça S:
         [
-            [0,0,0],
             [0,1,1],
             [1,1,0],
+            [0,0,0],
         ],
         //Peça Z:
         [
-            [0,0,0],
             [1,1,0],
             [0,1,1],
+            [0,0,0],
         ],
         //Peça T:
         [
             [0,1,0],
-            [0,1,1],
-            [0,1,0],
+            [1,1,1],
+            [0,0,0],
         ],
         [
             //Peça O:
@@ -38,56 +38,63 @@ const PIECES =
         ],
         //Peça I:
         [
-            [1,0,0,0],  
-            [1,0,0,0],
-            [1,0,0,0],
-            [1,0,0,0],
+            [0,0,0,0],  
+            [1,1,1,1],
+            [0,0,0,0],
+            [0,0,0,0],
         ],
     ];
+const COLORS = ["./images/blue.png","./images/yellow.png","./images/orange.png","./images/purple.png","./images/green.png","./images/red.png","./images/effectBlue.png","./images/grey.png", 0];
+let GRID = ()=>{
+    let arr = [];
+    for(let i = 0;i<20;i++){
+        arr.push([]);
+        for(let j = 0;j<10;j++){
+            arr[i].push(0);
+        }
+    }
+    return arr;
+}
 
 const WALL = 2;
 //const HIDER = 4;//nao alterar
-const SIDE = 20;
+const SIDE = 40;
 const TIME = 1000;
 const ROWS = 20+WALL;
-const COLLUMS = 10 + WALL;
-const COLORS = ["./images/blue.png","./images/yellow.png","./images/orange.png","./images/purple.png","./images/green.png","./images/red.png","./images/grey.png","./images/effectBlue.png","#000000"];
+const COLLUMS = 10 + WALL;  
 
 //------------------------------------------------------------Classes->Piece:
 class Piece{
     constructor(ctx){
         this.ctx = ctx;
-        this.posX = COLLUMS/2 - 1;
-        this.posY = this.initialPosY();
-        this.randomShape = Math.round(Math.random()*6);
-        this.shape = PIECES[this.randomShape];
-        this.randomColor = Math.round(Math.random()*5);
-        this.color = COLORS[this.randomColor];
+        this.posX = 5;
+        this.posY= -2;
+        this.shape = PIECES[Math.round(Math.random()*6)];
+        this.color = COLORS[Math.round(Math.random()*5)];
     };
     rotate(collision){
-        let newShape = [...this.shape];
+        let newShape = this.shape; //ajeitar isso pq se nao altera tudo;
+        //questiona o X se e negativo ou com o length > 20,se sim:
+        newShapePosX = this.posX;
 
+        //rotaciona um NewShape que e igual a shape, porem com o x e y ajeitados;
         if(!collision(newShape)){
+            this.shape = newShape;
+            this.posX = newShapePosX;
 
-        }else{
-            return;
-        }
-    };
-    initialPosY(){
-        if(this.shape === PIECES[6]){
-            return -3;
-        }else if(this.shape === PIECES[5]){
-            return -1;
-        }else{
-            return -2;
         };
     };
     drawPiece(){
-        for(let r = 0;r<this.shape.length;r++){
-            for(let c = 0;c<this.shape.length;c++){
-                if(this.posY+r !== 0){
-                    this.ctx.drawImage('.images/yellow.png',50,50);
-                    this.ctx.fillRect(this.posX,this.posY,SIDE,SIDE);
+        let img = new Image();
+        img.src = this.color;
+        for(let y = 0;y<this.shape.length;y++){
+            for(let x = 0;x<this.shape.length;x++){
+                if(this.shape[y][x]===1){
+                    let positionX = this.posX + x;
+                    let positionY = this.posY + y;
+                    if(positionY !== 0){
+                        this.ctx.drawImage(img,positionX*SIDE,positionY*SIDE,SIDE,SIDE);
+                    };
                 };
             };
         };
@@ -104,54 +111,60 @@ class Piece{
 class Game{
     constructor(ctx){
         this.ctx = ctx;
-        this.grid = this.makeStartGrid();
         this.fPiece = null;
-        this.fPieceTwo = null; 
+        this.fPieceTwo = null;
+        this.grid = GRID(); 
     };
     drawGrid(){
-        for(let i=1;i<=ROWS;){
-            for(let j = 1;j<=COLLUMS;j++){
-                if(this.grid[i][j] === '#000000'){
-                    this.ctx.fillRect(j*SIDE,i*SIDE,20,20);
+        for(let i = 1;i< COLLUMS-1;i++){
+            for(let j = 1;j<ROWS-1;j++){
+                if(typeof this.grid[i][j] !== 'string'){  
+                    this.ctx.fillRect(i*SIDE,j*SIDE,SIDE,SIDE);
                 }else{
-                    this.ctx.drawImage(j*SIDE,i*SIDE)
-                }
+                    let img = new Image();
+                    img.src = this.grid[i][j];
+                    this.ctx.drawImage(img,i*SIDE,j*SIDE,SIDE,SIDE);
+                };
             };
         };
     };
-    makeStartGrid(){
-        let arr = [];
-        for(i = 0;i<=ROWS;i++){
-            arr.push([]);
-            for(j = 0 ; j<=COLLUMS;j++){  
-                if(j===0 || i===0 || i === ROWS - 1 || j === COLLUMS -1 ){}                          
-                arr[i][j].push('ENDEREÇO DA IMAGEM DE PAREDE');
-                
-            };
-        };
-    };
+    drawAll(){
+        if(this.fPiece){
+            this.drawGrid();
+            this.fPiece.drawPiece();
+        }
+    }
     addGrid(){
         
     };
-    collision(grid){
-        if(true){
-            this.addGrid();
-            if(this.testGameOver()){
-                return true;
-            };
-        };
+    collision(shape,posX,posY){
+        for(let x = 0;x<this.shape.length;x++){
+            for(let y = 0;y<this.shape.length;y++){
+            }
+        }
+       //testa primeiro se o shape bate na parede, se sim retorna true;
+       //testa se o shape bate no grid, se sim retorna true;
+       //retorna false;
     };
     testGameOver(){
         return this.fPiece.posY === 0?true:false;
     };
 };
 //------------------------------------------------------------Script-HTML:
- const canvasGame = document.getElementById('tetris');
- //const canvasNextPiece = document.getElementById('next-piece');
- const contextGame = canvasGame.getContext('2d');
- //const contextNextPiece = canvasNextPiece.getContext('2d');
+const canvasGame = document.getElementById('tetris');
+const canvasNextPiece = document.getElementById('next-piece');
+const contextGame = canvasGame.getContext('2d');
+const contextNextPiece = canvasNextPiece.getContext('2d');
 
-let a = new Piece(contextGame);
-a.posX = 200;
-a.posY = 600;
-a.drawPiece();
+
+let novo = new Game(contextGame);
+let pa = new Piece(contextGame);
+novo.fPiece = pa;
+function draw2(){
+    novo.drawGrid();
+    console.log('AAAAAAAAAAA'); 
+};
+if(novo.fpiece === null){
+    
+}
+

@@ -25,7 +25,7 @@ console.log(b[4]);
 console.log(b[5]);
 
 console.log(b[6]);*/
-
+/*
 const piece =
 [
     [
@@ -74,3 +74,73 @@ function rotate(collision,ppc){
 };
 rotate(collision,shape);
 
+*/
+/*
+const COLORS = [1,2];
+const ROWS = 22;
+const COLLUMS = 12;
+function makeStartGrid(){
+    let arr = [];
+    for(i = 0;i<=ROWS;i++){
+        arr.push([]);
+        for(j = 0 ; j<=COLLUMS;j++){  
+            if(j===0 || i===0 || i === ROWS || j === COLLUMS ){                         
+                arr[i][j] = COLORS[0];
+            }else{
+                arr[i][j] = COLORS[1];
+            };
+        };
+    };
+    return arr;
+};
+let a = makeStartGrid();
+
+console.log(a[0]);
+console.log(a[1]);
+console.log(a[2]);
+console.log(a[3]);
+console.log(a[4]);
+console.log(a[5]);
+console.log(a[6]);
+console.log(a[7]);
+console.log(a[8]);
+console.log(a[9]);
+console.log(a[10]);
+console.log(a[11]);
+console.log(a[12]);
+console.log(a[13]);
+console.log(a[14]);
+console.log(a[15]);
+console.log(a[16]);
+console.log(a[17]);
+console.log(a[18]);
+console.log(a[19]);
+console.log(a[20]);
+console.log(a[21]);
+console.log(a[22]);
+
+*/
+const GRID = [
+    [COLOR[7],COLOR[7],COLOR[7],COLOR[7],COLOR[7],COLOR[7],COLOR[7],COLOR[7],COLOR[7],COLOR[7],COLOR[7],COLOR[7]],
+    [COLOR[7],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[7]],
+    [COLOR[7],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[7]],
+    [COLOR[7],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[7]],
+    [COLOR[7],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[7]],
+    [COLOR[7],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[7]],
+    [COLOR[7],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[7]],
+    [COLOR[7],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[7]],
+    [COLOR[7],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[7]],
+    [COLOR[7],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[7]],
+    [COLOR[7],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[7]],
+    [COLOR[7],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[7]],
+    [COLOR[7],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[7]],
+    [COLOR[7],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[7]],
+    [COLOR[7],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[7]],
+    [COLOR[7],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[7]],
+    [COLOR[7],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[7]],
+    [COLOR[7],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[7]],
+    [COLOR[7],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[7]],
+    [COLOR[7],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[7]],
+    [COLOR[7],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[8],COLOR[7]],
+    [COLOR[7],COLOR[7],COLOR[7],COLOR[7],COLOR[7],COLOR[7],COLOR[7],COLOR[7],COLOR[7],COLOR[7],COLOR[7],COLOR[7]],
+];
