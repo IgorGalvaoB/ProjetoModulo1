@@ -45,7 +45,7 @@ const PIECES =
         ],
     ];
 const COLORS = ["./images/blue.png","./images/yellow.png","./images/orange.png","./images/purple.png","./images/green.png","./images/red.png","./images/effectBlue.png","./images/grey.png", 0];
- GRID = [
+const GRID = [
     ['./images/grey.png','./images/grey.png','./images/grey.png','./images/grey.png','./images/grey.png','./images/grey.png','./images/grey.png','./images/grey.png','./images/grey.png','./images/grey.png','./images/grey.png','./images/grey.png','./images/grey.png'],
     ['./images/grey.png',0,0,0,0,0,0,0,0,0,0,'./images/grey.png'],
     ['./images/grey.png',0,0,0,0,0,0,0,0,0,0,'./images/grey.png'],
@@ -131,15 +131,48 @@ class Piece{
             };
         };
     };
-    moveDown(collision){
-        if(!collision(shape,this.posX,this.posY+1)){
-            this.posY += 1;
+    moveDown(grid){
+        if(this.collision(this.shape,this.posX,this.posY+1,grid)){
+            return false;
         }else{
-
-        }
+            this.posY += 1;
+            return true;
+        };
+    };
+    collision(shape,x,y,grid) {
+        const length = shape.length;
+        for(let i = 0;i < length;i++){
+            for(let j = 0;j < length;j++){
+                if(shape[i][j] === 1){
+                    let yPos = y + i;
+                    let xPos = x + j;
+                    if(yPos > 0 && yPos < ROWS && xPos < COLLUMS){
+                        if(typeof grid[yPos][xPos]=== 'string'){
+                            return true;
+                        };                
+                    };
+                };
+            };
+        };
+        return false;
+    };
+    moveLeft(grid){
+        if(this.collision(this.shape,this.posX-1,this.posY,grid)){
+            return;
+        }else{
+            this.posY -= 1;
+            return;
+        };
+    };
+    moveRight(grid){
+        if(this.collision(this.shape,this.posX+1,this.posY,grid)){
+            return;
+        }else{
+            this.posX += 1;
+            return;
+        };
     };
     
-
 };
 //------------------------------------------------------------Classes->Game:
 class Game{
@@ -162,17 +195,21 @@ class Game{
             };
         };
     };
-    drawAll(){
+    render(){
         if(this.fPiece){
-            this.drawGrid();
-            this.fPiece.drawPiece();
-        }
-    }
-    addGrid(){
-        
+            this.fPiece.drawPiece(this.drawGrid());
+        };
     };
-    collision(shape,x,y) {
-
+    addGrid(){
+        for(let i = 0;i<this.fPiece.shape.length;i++){
+            for(let j = 0;j<this.fPiece.shape.length;j++){
+                if(this.fPiece.shape[i][j] === 1){
+                    let yPos = this.fPiece.posY + i;
+                    let xPos = this.fPiece.posX + j;
+                    this.grid[yPos][xPos] = this.fPiece.color;
+                };
+            };
+        };
     };
     
        // return true;
@@ -181,7 +218,17 @@ class Game{
        //retorna false;
    
     testGameOver(){
-    
+        for(let i = 0;i<this.fPiece.shape.length;i++){
+            for(let j = 0;j<this.fPiece.shape.length;j++){
+                if(this.fPiece.shape[i][j] === 1){
+                    let yPos = this.fPiece.posY + i;
+                    if(yPos<=1){
+                        return true;
+                    };
+                };
+            };
+        };
+        return false;
     };
     addScore(){
 
@@ -192,33 +239,40 @@ const canvasGame = document.getElementById('tetris');
 const canvasNextPiece = document.getElementById('next-piece');
 const contextGame = canvasGame.getContext('2d');
 const contextNextPiece = canvasNextPiece.getContext('2d');
-
-let x = 0;
-let novo = new Game(contextGame);
-let pa = new Piece(contextGame);
-novo.fPiece = pa;
+//function ake
 let img = new Image();
+img.src = COLORS[7];
 
-
-
-
-
-
-
-/*
-function redoit(){
-    pa.drawPiece(novo.drawGrid());
-    if(!novo.collision(pa.shape,pa.posX,pa.posY+1)){
-        if(x===50){
-            pa.posY+=1;
-            x=0;
-            console.log('a');
-        }
-    
-        x+=1;
-        //console.log(!novo.collision(pa.shape,pa.posX,pa.posY+1));
-        //if(!novo.collision(pa.shape,pa.posX,pa.posY+1)){
-    };
+const setGameRender = ()=>{
+    let timeCount = 0;
+    let game = new Game(contextGame);
+    let firstPiece = new Piece(contextGame);
+    let secondPiece = new Piece(contextNextPiece);
+    game.fPiece = firstPiece;
+    //let holderX = secondPiece.posX;
+    //let holderY = secondPiece.posY;
+    let img = new Image();
+    img.src = COLORS[7];
+    let interval = setInterval(()=>{
+        firstPiece.drawPiece(game.drawGrid());
+        if(!game.fPiece){
+            firstPiece = new Piece(contextGame);
+            game.fPiece = firstPiece;
+        };
+        if(timeCount === 10){
+            if(!firstPiece.moveDown(game.grid)){
+                if(game.testGameOver()){
+                    clearInterval(interval);
+                    return;
+                }
+                game.addGrid();
+                game.fPiece = null;
+            };
+            timeCount=0;
+        };
+        
+        timeCount++;
+    },10);
 };
 
 window.addEventListener('load',()=>{
@@ -231,17 +285,4 @@ window.addEventListener('load',()=>{
             };
         };
     };
-    
 });
-img.src = COLORS[7];
-function b (){
-    
-    setInterval(()=>{
-        
-        redoit();
-    },50);
-};
-function a(){
-    let b = GRID();
-    console.log(b[3]);
-}*/
