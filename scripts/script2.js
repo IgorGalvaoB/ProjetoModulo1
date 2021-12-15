@@ -73,17 +73,15 @@ const GRID = [
 
 
 const WALL = 2;
-//const HIDER = 4;//nao alterar
 const SIDE = 40;
-const TIME = 1000;
-const ROWS = 20+WALL;
+const ROWS = 20 + WALL;
 const COLLUMS = 10 + WALL;  
 
 //------------------------------------------------------------Classes->Piece:
 class Piece{
     constructor(ctx){
         this.ctx = ctx;
-        this.shape = PIECES[Math.round(Math.random()*6)];
+        this.shape = PIECES[Math.floor(Math.random()/100*700)];
         this.color = COLORS[Math.round(Math.random()*5)];
         this.posX = this.initialPosX();
         this.posY = this.initialPosY();
@@ -95,14 +93,14 @@ class Piece{
             return -1;
         }else{
             return -3;
-        }
+        };
     };
     initialPosX(){
         if(this.shape.length === 3 || this.shape.length === 2){
             return 5;
         }else{
             return 4;
-        }
+        };
     }
     rotate(collision){
         let newShape = this.shape; //ajeitar isso pq se nao altera tudo;
@@ -160,7 +158,7 @@ class Piece{
         if(this.collision(this.shape,this.posX-1,this.posY,grid)){
             return;
         }else{
-            this.posY -= 1;
+            this.posX -= 1;
             return;
         };
     };
@@ -172,15 +170,43 @@ class Piece{
             return;
         };
     };
+    rotate(grid){
+        let x = this.posX;
+        let y = this.posY;
+        let shape = [...this.shape.map(row=> [...row])];
+        let l = this.shape.length;
+        if(x < 1){
+            x = 1; 
+        };
+        if(x + shape.length > COLLUMS - WALL){
+            x = COLLUMS - shape.length - 1;
+        };
+        
+        for (let i = 0; i < l / 2; i++) {
+            for (let j = i; j < l - i - 1; j++) {
+                let holder = shape[i][j];
+                shape[i][j] = shape[l - 1 - j][i];
+                shape[l - 1 - j][i] = shape[l - 1 - i][l - 1 - j];
+                shape[l - 1 - i][l - 1 - j] = shape[j][l - 1 - i];
+                shape[j][l - 1 - i] = holder;
+            };
+        };
     
+        if(!this.collision(shape,x,y,grid)){
+            this.posX = x;
+            this.shape = shape;
+        };
+    };
 };
+
 //------------------------------------------------------------Classes->Game:
 class Game{
     constructor(ctx){
         this.ctx = ctx;
         this.fPiece = null;
         this.fPieceTwo = null;
-        this.grid = [...GRID.map((row) => [...row])] 
+        this.grid = [...GRID.map(row => [...row])];
+        this.score = 0;
     };
     drawGrid(){
         for(let i = 1;i< COLLUMS-1;i++){
@@ -212,11 +238,6 @@ class Game{
         };
     };
     
-       // return true;
-       //testa primeiro se o shape bate na parede, se sim retorna true;
-       //testa se o shape bate no grid, se sim retorna true;
-       //retorna false;
-   
     testGameOver(){
         for(let i = 0;i<this.fPiece.shape.length;i++){
             for(let j = 0;j<this.fPiece.shape.length;j++){
@@ -231,57 +252,133 @@ class Game{
         return false;
     };
     addScore(){
-
+        const counter = [];
+        const rowFilled = row => {
+            for (let value of row) {
+                if (value === 0) {
+                    return false
+                };
+            };
+            return true
+        };
+        for (let i = 1; i < this.grid.length -1; i++) {
+            
+            if (rowFilled(this.grid[i])){
+                //counter.push(i);
+                this.grid.splice(i, 1);
+                this.grid.splice(1,0,['./images/grey.png',0,0,0,0,0,0,0,0,0,0,'./images/grey.png']);
+            };
+        };/*
+        for(let i = 0;i<counter.length;i++){
+            let x = 0;
+            let b = ()=>{
+                this.ctx.clearRect(SIDE,counter[i]*SIDE,(COLLUMS - WALL)*SIDE,SIDE);
+                this.fPiece.drawPiece(this.drawGrid());
+                
+            };
+            let c = setInterval(()=>{
+                b();
+                x++;
+                console.log('aki');
+                if(x === 2){
+                    clearInterval(c);
+                };
+            },100);
+        };
+        for(let i = 0;i<counter.length;i++){
+            console.log('tem q vir abaixo');
+            this.grid.splice(counter[i], 1);
+            this.grid.splice(1,0,['./images/grey.png',0,0,0,0,0,0,0,0,0,0,'./images/grey.png']);
+        };*/
     };
+               
 };
+
 //------------------------------------------------------------Script-HTML:
 const canvasGame = document.getElementById('tetris');
 const canvasNextPiece = document.getElementById('next-piece');
 const contextGame = canvasGame.getContext('2d');
 const contextNextPiece = canvasNextPiece.getContext('2d');
-//function ake
-let img = new Image();
+//Adicionar 
+//-------------------------------------------------------------------------
+const img = new Image();
 img.src = COLORS[7];
-
+let timeCount = 0;
+let game = new Game(contextGame);
+let firstPiece = new Piece(contextGame);
+let secondPiece = new Piece(contextNextPiece);
+//----------------------------------------------------------chamada do jogo:
 const setGameRender = ()=>{
-    let timeCount = 0;
-    let game = new Game(contextGame);
-    let firstPiece = new Piece(contextGame);
-    let secondPiece = new Piece(contextNextPiece);
+    game = new Game(contextGame);
+    firstPiece = new Piece(contextGame);
+    secondPiece = new Piece(contextNextPiece);
     game.fPiece = firstPiece;
-    //let holderX = secondPiece.posX;
-    //let holderY = secondPiece.posY;
+    
     let img = new Image();
     img.src = COLORS[7];
     let interval = setInterval(()=>{
-        firstPiece.drawPiece(game.drawGrid());
-        if(!game.fPiece){
+        if(firstPiece === null){
             firstPiece = new Piece(contextGame);
             game.fPiece = firstPiece;
         };
-        if(timeCount === 10){
+        firstPiece.drawPiece(game.drawGrid());
+        if(timeCount === 25){
             if(!firstPiece.moveDown(game.grid)){
                 if(game.testGameOver()){
                     clearInterval(interval);
                     return;
-                }
+                };
                 game.addGrid();
-                game.fPiece = null;
+                game.addScore();
+                firstPiece = null;
             };
             timeCount=0;
         };
         
         timeCount++;
-    },10);
-};
+    },20);
+};/*
+const request =()=>{
+    game.drawGrid();
+    firstPiece.drawPiece();
+    window.requestAnimationFrame(request);
 
+};
+*/
+//------------------------------------------------------------butoes/pre-desenho
 window.addEventListener('load',()=>{
+    window.addEventListener('keypress',(button)=>{
+        button.preventDefault();
+        switch(button.key){
+            case 'a':
+                firstPiece.moveLeft(game.grid);
+                firstPiece.drawPiece(game.drawGrid());
+                break;
+            case 'd':
+                firstPiece.moveRight(game.grid);
+                firstPiece.drawPiece(game.drawGrid());
+                break;
+            case 's':
+                if(firstPiece!==null){
+                    firstPiece.moveDown(game.grid);
+                    firstPiece.drawPiece(game.drawGrid());
+                };
+                break;
+            case 'w':
+                if(firstPiece!==null){
+                    firstPiece.rotate(game.grid);
+                    //firstPiece.drawPiece(game.drawGrid());
+                };
+                break;
+
+            };
+    });
     for(let i=0;i<ROWS;i++){
         for(let j=0;j<COLLUMS;j++){
             if(j===0 || j === COLLUMS -1 || i===0|| i===ROWS-1){
-                contextGame.drawImage(img,j*SIDE,i*SIDE,40,40);
+                contextGame.drawImage(img,j*SIDE,i*SIDE,SIDE,SIDE);
             }else{
-                contextGame.fillRect(j*SIDE,i*SIDE,40,40);
+                contextGame.fillRect(j*SIDE,i*SIDE,SIDE,SIDE);
             };
         };
     };
