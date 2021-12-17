@@ -309,6 +309,9 @@ class Game{
         },375);
     };
     updateGameArea(){
+        if(tSound.currentTime >= 75){
+            tSound.currentTime = 0;
+        };
         //this.sPiece.drawNextPiece();
         if(this.fPiece){
             this.fPiece.drawPiece(this.drawGrid());
