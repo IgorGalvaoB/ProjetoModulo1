@@ -4,39 +4,95 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Tetris By Me</title>
     <link rel="stylesheet" href="styles/style.css">
+    
 </head>
 <body>
-    <div style = 'height: 100px;'></div>
-    <header style = 'height: 100px;position: fixed;'>
-     
+    
+    <header id='header'>
+        <figure>
+            <img src="" alt="tetris logo">
+        </figure>
+        <nav id='navigation'>
+            <ul id ='list'>
+                <li>Game</li>
+                <li>|</li>
+                <li>Tetris History</li>
+                <li>|</li>
+                <li>About Me</li>
+            </ul>
+        </nav>
     </header>
-    <div id = "game">
-        <div id = 'buttons'>
-            <button type= 'button' class = 'button'>Start</button>
-            <button type= 'button' class = 'button'>Pause</button>
-            <button type= 'button' class = 'button'>Change controls</button>
-        </div>
-        <div id = "canvas-one">
-            <canvas width = '480' height= '880' id='tetris'></canvas>
-        </div>
-        <div id='score-sPiece'>    
-            <div>
-                <h1 id='score'>
-                    00000000000
-                </h1>
-            </div>
-            <div>
-                <canvas width = '240' height= '240' style = 'border: 1px solid red;' id='next-piece'></canvas>  
-            </div>
-        </div>
+    <div id = 'content'>
+        <div id = "game">
+            <div id = 'buttons'>
+                
+               
+                <button class="button" type='button' id = 'start' role="button">Start</button>
+                <button class="button" id='pause'role="button">Pause</button>
+                <button class="button" id= 'change-controls'role="button">Change controls Arrows</button>
+                <button class="button" id= 'sound-mute'role="button">Sound Off</button>
             
-        
+            </div>
+            <div id = "canvas-one">
+                <canvas width = '480' height= '880' id='tetris'></canvas>
+            </div>
+            <div id='score-sPiece'>    
+                <div>
+                    <h1 id='score'>
+                    </h1>
+                </div>
+                <div>
+                    <canvas width = '240' height= '240' id='next-piece'></canvas>  
+                </div>
+            </div>
+
+                
+            
+        </div>
+        <section id='history'>
+            <div id="figures">
+                <div>
+                    <img title="First version of Tetris 1984" class='img' src="./images/firstVersion.jpg" alt="First version of tetris">
+                    <figcaption>First version of Tetris 1984</figcaption>
+                </div>
+                <div>
+                    <img class='img' title= 'Tetris GameBoy 1989'src="images/1989gameBoy.jpg" alt="Tetris Gameboy">
+                    <figcaption>Tetris GameBoy 1989</figcaption>
+                </div>
+                <div>
+
+                    <img title="Tetris Plastation 4 2018" class='img' src="images/2019playStation.webp" alt="Tetris Playstation">
+                    <figcaption>Tetris Plastation 4 2018</figcaption>
+                </div>
+            </div>
+            <article>
+                <p>
+                    Tetris is a puzzle video game created by Soviet software engineer Alexey Pajitnov in 1984. It has been published by several companies for multiple platforms, most prominently during a dispute over the appropriation of the rights in the late 1980s. After a significant period of publication by Nintendo, the rights reverted to Pajitnov in 1996, who co-founded The Tetris Company with Henk Rogers to manage licensing.
+                </p>
+                <p>
+                    In Tetris, players complete lines by moving differently shaped pieces (tetrominoes), which descend onto the playing field. The completed lines disappear and grant the player points, and the player can proceed to fill the vacated spaces. The game ends when the playing field is filled. The longer the player can delay this outcome, the higher their score will be. In multiplayer games, players must last longer than their opponents; in certain versions, players can inflict penalties on opponents by completing a significant number of lines. Some adaptations have provided variations to the game's theme, such as three-dimensional displays or a system for reserving pieces.
+                </p>
+                <p>
+                    Built on simple rules and requiring intelligence and skill, Tetris established itself as one of the great early video games. By December 2011, it had sold 202 million copies – approximately 70 million physical units and 132 million paid mobile game downloads – making it one of the best-selling video game franchises of all time. The Game Boy version is one of the best-selling games of all time, with more than 35 million copies sold. Tetris is available on over 65 platforms, setting a Guinness world record for the most ported video game. Tetris is rooted within popular culture and its popularity extends beyond the sphere of video games; imagery from the game has influenced architecture, music and cosplay. The game has also been the subject of various research studies that have analyzed its theoretical complexity and have shown its effect on the human brain following a session, in particular the Tetris effect.
+                </p>
+            </article>
+        </section>
+        <article id = 'article'>
+            <section id = 'about-me'>
+                <img src="./images/me.jpg" style='width:300px;margin-left: 2vw;border:inset 2px' alt="">
+                <p id='about-me-text'>
+                    About me?! I always found it difficult to say who I am, so I will use my dreams, passions and desires to do it for me. I love electronic games, movies and series.<br> Disgruntled work, for a long time, in a bank, dreaming of becoming a programmer one day. I hope that this project and others that will come will be able to fulfill this desire.
+                </p>
+
+            </section>
+            
+        </article>
+       
     </div>
-    <script src="./scripts/script2.js"></script>
+    <script src="./scripts/script.js"></script>
 </body>
 </html>
-<!-- HTML !-->
 
 

@@ -82,7 +82,7 @@ class Piece{
     constructor(ctx,ctx2){
         this.ctxNextPiece = ctx2;
         this.ctx = ctx;
-        this.shape = PIECES[6];
+        this.shape = PIECES[Math.round(Math.random()*6)];
         this.color = COLORS[Math.round(Math.random()*5)];
         this.posX = this.initialPosX();
         this.posY = this.initialPosY();
@@ -224,7 +224,9 @@ class Game{
         this.grid = [...GRID.map(row => [...row])];//faça isso como 1 funçao, limpe o grid e xablau pra dar restart nao faça "new Game()" pq ai os botoes param de responder
         this.score = '00000000000';
         this.timeCount = 0;
-        this.arr = [];
+        this.arr = [];    
+        this.speed = 8;
+        this.sound = true;
     };
     drawGrid(){
         for(let i = 1;i< COLLUMS-1;i++){
@@ -257,6 +259,10 @@ class Game{
                 if(this.fPiece.shape[i][j] === 1){
                     let yPos = this.fPiece.posY + i;
                     if(yPos<=0){
+                        tSound.pause();
+                        tSound.currentTime = 0;
+                        buttonPause.innerText = 'Pause';
+                        buttonStart.innerText = 'Start';
                         return true;
                     };
                 };
@@ -278,49 +284,29 @@ class Game{
         for (let i = 1; i < this.grid.length -1; i++) {
             
             if (rowFilled(this.grid[i])){
-                //counter.push(i);
                 this.arr.push(i);
-                //this.grid.splice(i, 1);
-                //this.grid.splice(1,0,['./images/grey.png',0,0,0,0,0,0,0,0,0,0,'./images/grey.png']);
             };
         };
-        this.effectScore();
+        if(this.arr.length>0){
+            this.effectScore();
+        };
         if(counter>1){
             counter = counter + counter/10
         };
         counter *= 100;
         counter += Number(this.score);//deu errado 4 fileiras;
         this.score = ('00000000000' + counter).slice(-11);
-        /*
-        for(let i = 0;i<counter.length;i++){
-            let x = 0;
-            let b = ()=>{
-                this.ctx.clearRect(SIDE,counter[i]*SIDE,(COLLUMS - WALL)*SIDE,SIDE);
-                this.fPiece.drawPiece(this.drawGrid());
-                
-            };
-            let c = setInterval(()=>{
-                b();
-                x++;
-                console.log('aki');
-                if(x === 2){
-                    clearInterval(c);
-                };
-            },100);
-        };
-        for(let i = 0;i<counter.length;i++){
-            console.log('tem q vir abaixo');
-            this.grid.splice(counter[i], 1);
-            this.grid.splice(1,0,['./images/grey.png',0,0,0,0,0,0,0,0,0,0,'./images/grey.png']);
-        };*/
+        score.innerText = game.score;
+       
     };
     pauseGame(){
         clearInterval(this.interval);
     };
     startGame(){
         this.interval = setInterval(()=>{
+            this.sPiece.drawNextPiece();
             this.updateGameArea();
-        },100);
+        },375);
     };
     updateGameArea(){
         //this.sPiece.drawNextPiece();
@@ -328,7 +314,7 @@ class Game{
             this.fPiece.drawPiece(this.drawGrid());
             this.sPiece.drawNextPiece();
         };
-        if(this.timeCount === 10){
+        if(this.timeCount === 1){
             
             if(!this.fPiece.moveDown(game.grid)){
                 if(this.testGameOver()){
@@ -341,6 +327,7 @@ class Game{
                 this.fPiece = this.sPiece;
                 this.sPiece = new Piece(this.ctx,this.ctx2);
                 
+                
             };
            this.timeCount=0;
         };
@@ -352,20 +339,14 @@ class Game{
             this.grid.splice(this.arr[i], 1);
             this.grid.splice(1,0,['./images/grey.png',0,0,0,0,0,0,0,0,0,0,'./images/grey.png']);
         };
-        //setTimeout(()=>{
-            
-            for(let i = 0;i< this.arr.length;i++){
-                    this.ctx.fillStyle = COLORS[6];
-                    this.ctx.fillRect(SIDE,this.arr[i]*SIDE,(COLLUMS-WALL)*SIDE,SIDE);
-                    this.ctx.fillStyle = 'black';
-            };
-            this.arr=[];
-        //},10);
-        setTimeout(()=>{
-            this.fPiece.drawPiece(this.drawGrid());
-        },100);
-
-    }
+        for(let i = 0;i< this.arr.length;i++){
+                this.ctx.fillStyle = COLORS[6];
+                this.ctx.fillRect(SIDE,this.arr[i]*SIDE,(COLLUMS-WALL)*SIDE,SIDE);
+                this.ctx.fillStyle = 'black';
+        };
+        this.arr=[];
+        cSound.play();
+    };
 
 };
 
@@ -374,6 +355,13 @@ const canvasGame = document.getElementById('tetris');
 const canvasNextPiece = document.getElementById('next-piece');
 const contextGame = canvasGame.getContext('2d');
 const contextNextPiece = canvasNextPiece.getContext('2d');
+const score = document.getElementById('score');
+const buttonStart = document.getElementById('start');
+const buttonPause = document.getElementById('pause');
+const buttonChangeControls = document.getElementById('change-controls');
+const buttonSoundMute = document.getElementById('sound-mute');
+
+
 //Adicionar 
 //------------------------------------------------------------Inicializaçao:
 let game = new Game(contextGame,contextNextPiece);
@@ -381,25 +369,48 @@ let game = new Game(contextGame,contextNextPiece);
 //let secondPiece = new Piece(contextGame,contextNextPiece);
 //game.fPiece = firstPiece;
 //game.sPiece = secondPiece;
-
+const cSound = new Audio('./sounds/clearSound.wav');
+const tSound = new Audio('./sounds/themeSound.wav');
+score.innerText = game.score;
+tSound.volume = 0.7;
+cSound.volume = 1;
 const img = new Image();
 img.src = COLORS[7];
+
+
+let md = 's';
+let mr = 'd';
+let ml = 'a';
+let r = 'w';
+
 //-------------------------------------------------------------funcoes da pagina
 
 //----------------------------------------------------------chamada do jogo:
-function restart (){
-    game.pauseGame();
+function start (){
+    tSound.play();
+    game.startGame();
+};
+
+function pause(){
+    tSound.pause();
+    clearInterval(game.interval);
+};
+function pauseSound(){
+    tSound.volume = 0;
+    cSound.volume = 0;
+};
+function startSound(){
+    tSound.volume = 0.7;
+    cSound.volume = 1
+}
+function restart(){
+    pause();
+    tSound.currentTime = 0;
     game.grid = [...GRID.map(row => [...row])];
     game.fPiece = new Piece(game.ctx,game.ctx2);
     game.sPiece = new Piece(game.ctx,game.ctx2);
-    game.startGame();
+    start();
 };
-function pause(){
-
-};
-function start(){};
-
-
 
 
 //------------------------------------------------------------butoes/pre-desenho
@@ -407,27 +418,28 @@ window.addEventListener('load',()=>{
     window.addEventListener('keydown',(button)=>{
         button.preventDefault();
         switch(button.key){
-            case 'ArrowDown':
-                if(game.fPiece!==null){
+            case `${md}`:
+                if(game.sPiece!==null && game.fPiece !== null){
                     game.fPiece.moveDown(game.grid);
                     game.fPiece.drawPiece(game.drawGrid());
+                    game.sPiece.drawNextPiece();
                 
                 };
                 break;
-            case 'ArrowLeft':
-                if(game.fPiece!==null){
+            case `${ml}`:
+                if(game.sPiece!==null && game.fPiece !== null){
                     game.fPiece.moveLeft(game.grid);
                     game.fPiece.drawPiece(game.drawGrid());
                 };
                 break;
-            case 'ArrowRight':
-                if(game.fPiece!==null){
+            case `${mr}`:
+                if(game.sPiece!==null && game.fPiece !== null){
                     game.fPiece.moveRight(game.grid);
                     game.fPiece.drawPiece(game.drawGrid());
                 };
                 break;
-            case 'ArrowUp':
-                if(game.fPiece!==null){
+            case `${r}`:
+                if(game.sPiece!==null && game.fPiece !== null){
                     game.fPiece.rotate(game.grid);
                     game.fPiece.drawPiece(game.drawGrid());
                 };
@@ -457,5 +469,55 @@ window.addEventListener('load',()=>{
             };
         };
     };  
+    buttonStart.onclick = ()=>{
+        
+        if(buttonStart.innerText === 'Start'){
+            restart();
+            buttonStart.innerText = "Restart"
+        }else{
+            restart();
+            if(buttonPause.innerText === 'Continue'){
+                buttonPause.innerText = 'Pause';
+            };
+        };
+    };
+    buttonPause.onclick = ()=>{
+        if(buttonStart.innerText === 'Start'){
+            return;
+        };
+        if(buttonPause.innerText === 'Pause'){
+            pause();
+            buttonPause.innerText = "Continue"
+        }else{
+            start();
+            buttonPause.innerText = "Pause";
+        };
+    }
+    buttonChangeControls.onclick=()=>{
+        if(buttonChangeControls.innerText === 'Change controls Arrows'){
+            r = "ArrowUp";
+            mr = "ArrowRight";
+            ml = "ArrowLeft";
+            md = "ArrowDown";
+            buttonChangeControls.innerText = 'Change controls (W,A,S,D)';
+        }else{
+            r = 'w';
+            mr = 'd';
+            ml = 'a';
+            md = 's';
+            buttonChangeControls.innerText = 'Change controls Arrows';
+        };
+    };
+    buttonSoundMute.onclick = ()=>{
+        if(buttonSoundMute.innerText === 'Sound Off'){
+            
+            pauseSound();
+            buttonSoundMute.innerText = 'Sound On'
+        }else{
+            startSound();
+
+            buttonSoundMute.innerText = 'Sound Off'
+        };
+    };
+
 });
-    
