@@ -2,9 +2,30 @@
     font-family: 'Digi';
     src: url('fonts/ds-digib.ttf');
 }
+html *{
+    border: 1px red solid;
+    font-family: 'Digi';
+}
+
+#game{
+    display:flex;
+    flex-direction: row;
+    justify-content: center;
+}
+#canvas-one{
+    width: 500px;
+}
+#buttons{
+    display: flex;
+    flex-direction: column;
+
+}
+.button{
+    width: 150px;
+    height: 65px;
+}
 #score{
     color:red;
-    font-family: 'Digi';
     font-size:2.68em;
     background-color: black;
     width: 240px;

@@ -38,10 +38,10 @@ const PIECES =
         ],
         //Peça I:
         [
-            [0,0,0,0],  
-            [1,1,1,1],
-            [0,0,0,0],
-            [0,0,0,0],
+            [0,1,0,0],  
+            [0,1,0,0],
+            [0,1,0,0],
+            [0,1,0,0],
         ],
     ];
 const COLORS = ["./images/blue.png","./images/yellow.png","./images/orange.png","./images/purple.png","./images/green.png","./images/red.png","./images/effectBlue.png","./images/grey.png", 0];
@@ -79,13 +79,25 @@ const COLLUMS = 10 + WALL;
 
 //------------------------------------------------------------Classes->Piece:
 class Piece{
-    constructor(ctx){
+    constructor(ctx,ctx2){
+        this.ctxNextPiece = ctx2;
         this.ctx = ctx;
-        this.shape = PIECES[Math.floor(Math.random()/100*700)];
+        this.shape = PIECES[6];
         this.color = COLORS[Math.round(Math.random()*5)];
         this.posX = this.initialPosX();
         this.posY = this.initialPosY();
+        this.posNP = this.initialPosNP();
     };
+    initialPosNP(){
+        if(this.shape.length === 3){
+            return [80,60];
+        }else if(this.shape.length === 2){
+            return [80,80];
+        }else{
+            return [60,40];
+        };
+    };
+   
     initialPosY(){
         if(this.shape.length === 3){
             return -2;
@@ -101,19 +113,8 @@ class Piece{
         }else{
             return 4;
         };
-    }
-    rotate(collision){
-        let newShape = this.shape; //ajeitar isso pq se nao altera tudo;
-        //questiona o X se e negativo ou com o length > 20,se sim:
-        newShapePosX = this.posX;
-
-        //rotaciona um NewShape que e igual a shape, porem com o x e y ajeitados;
-        if(!collision(newShape)){
-            this.shape = newShape;
-            this.posX = newShapePosX;
-
-        };
     };
+   
     drawPiece(){
         let img = new Image();
         img.src = this.color;
@@ -197,16 +198,34 @@ class Piece{
             this.shape = shape;
         };
     };
+    drawNextPiece(){
+        let imgNextPiece = new Image();
+        imgNextPiece.src = this.color;
+        for(let i=1;i<11;i++){
+            for(let j=1;j<11;j++){
+                this.ctxNextPiece.fillRect(j*SIDE/2,i*SIDE/2,SIDE/2,SIDE/2);
+            };
+        };
+        for(let y = 0;y<this.shape.length;y++){
+            for(let x = 0;x<this.shape.length;x++){
+                if(this.shape[y][x]===1){                  
+                    this.ctxNextPiece.drawImage(imgNextPiece,this.posNP[0]+x*SIDE,this.posNP[1] + y*SIDE,SIDE,SIDE);
+                };
+            };
+        };
+    };
 };
 
 //------------------------------------------------------------Classes->Game:
 class Game{
-    constructor(ctx){
+    constructor(ctx,ctx2){
         this.ctx = ctx;
-        this.fPiece = null;
-        this.fPieceTwo = null;
-        this.grid = [...GRID.map(row => [...row])];
-        this.score = 0;
+        this.ctx2 = ctx2;
+        this.fPiece = new Piece(ctx,ctx2);
+        this.sPiece = new Piece(ctx,ctx2);
+        this.grid = [...GRID.map(row => [...row])];//faça isso como 1 funçao, limpe o grid e xablau pra dar restart nao faça "new Game()" pq ai os botoes param de responder
+        this.score = '00000000000';
+        this.timeCount = 0;
     };
     drawGrid(){
         for(let i = 1;i< COLLUMS-1;i++){
@@ -219,11 +238,6 @@ class Game{
                     this.ctx.drawImage(img,i*SIDE,j*SIDE,SIDE,SIDE);
                 };
             };
-        };
-    };
-    render(){
-        if(this.fPiece){
-            this.fPiece.drawPiece(this.drawGrid());
         };
     };
     addGrid(){
@@ -252,14 +266,15 @@ class Game{
         return false;
     };
     addScore(){
-        const counter = [];
+        let counter = 0;
         const rowFilled = row => {
             for (let value of row) {
                 if (value === 0) {
                     return false
                 };
             };
-            return true
+            counter ++;
+            return true;
         };
         for (let i = 1; i < this.grid.length -1; i++) {
             
@@ -268,7 +283,14 @@ class Game{
                 this.grid.splice(i, 1);
                 this.grid.splice(1,0,['./images/grey.png',0,0,0,0,0,0,0,0,0,0,'./images/grey.png']);
             };
-        };/*
+        };
+        if(counter>1){
+            counter = counter + counter/10
+        };
+        counter *= 100;
+        counter += Number(this.score);//deu errado 4 fileiras;
+        this.score = ('00000000000' + counter).slice(-11);
+        /*
         for(let i = 0;i<counter.length;i++){
             let x = 0;
             let b = ()=>{
@@ -291,7 +313,39 @@ class Game{
             this.grid.splice(1,0,['./images/grey.png',0,0,0,0,0,0,0,0,0,0,'./images/grey.png']);
         };*/
     };
-               
+    pauseGame(){
+        clearInterval(this.interval);
+    };
+    startGame(){
+        this.interval = setInterval(()=>{
+            this.updateGameArea();
+        },20);
+    };
+    updateGameArea(){
+        if(this.fPiece){
+            this.fPiece.drawPiece(this.drawGrid());
+            this.sPiece.drawNextPiece();
+        };
+        if(this.timeCount === 25){
+            
+            if(!this.fPiece.moveDown(game.grid)){
+                if(this.testGameOver()){
+                    clearInterval(this.interval);
+                    this.fPiece = null;
+                    this.sPiece = null;
+                };
+                this.addGrid();
+                this.addScore();
+                this.fPiece = this.sPiece;
+                this.sPiece = new Piece(this.ctx,this.ctx2);
+                
+            };
+            this.timeCount=0;
+        };
+        
+        this.timeCount++;
+    };
+
 };
 
 //------------------------------------------------------------Script-HTML:
@@ -300,79 +354,75 @@ const canvasNextPiece = document.getElementById('next-piece');
 const contextGame = canvasGame.getContext('2d');
 const contextNextPiece = canvasNextPiece.getContext('2d');
 //Adicionar 
-//-------------------------------------------------------------------------
+//------------------------------------------------------------Inicializaçao:
+let game = new Game(contextGame,contextNextPiece);
+//let firstPiece = new Piece(contextGame,contextNextPiece);
+//let secondPiece = new Piece(contextGame,contextNextPiece);
+//game.fPiece = firstPiece;
+//game.sPiece = secondPiece;
+let play = {
+    game: game,
+};
 const img = new Image();
 img.src = COLORS[7];
-let timeCount = 0;
-let game = new Game(contextGame);
-let firstPiece = new Piece(contextGame);
-let secondPiece = new Piece(contextNextPiece);
-//----------------------------------------------------------chamada do jogo:
-const setGameRender = ()=>{
-    game = new Game(contextGame);
-    firstPiece = new Piece(contextGame);
-    secondPiece = new Piece(contextNextPiece);
-    game.fPiece = firstPiece;
-    
-    let img = new Image();
-    img.src = COLORS[7];
-    let interval = setInterval(()=>{
-        if(firstPiece === null){
-            firstPiece = new Piece(contextGame);
-            game.fPiece = firstPiece;
-        };
-        firstPiece.drawPiece(game.drawGrid());
-        if(timeCount === 25){
-            if(!firstPiece.moveDown(game.grid)){
-                if(game.testGameOver()){
-                    clearInterval(interval);
-                    return;
-                };
-                game.addGrid();
-                game.addScore();
-                firstPiece = null;
-            };
-            timeCount=0;
-        };
-        
-        timeCount++;
-    },20);
-};/*
-const request =()=>{
-    game.drawGrid();
-    firstPiece.drawPiece();
-    window.requestAnimationFrame(request);
+//-------------------------------------------------------------funcoes da pagina
 
+//----------------------------------------------------------chamada do jogo:
+function restart (){
+    play.game.pauseGame();
+    play.game.grid = [...GRID.map(row => [...row])];
+    play.game.fPiece = new Piece(play.game.ctx,play.game.ctx2);
+    play.game.sPiece = new Piece(play.game.ctx,play.game.ctx2);
+    play.game.startGame();
 };
-*/
+
+
+
+
 //------------------------------------------------------------butoes/pre-desenho
 window.addEventListener('load',()=>{
-    window.addEventListener('keypress',(button)=>{
+    window.addEventListener('keydown',(button)=>{
         button.preventDefault();
         switch(button.key){
-            case 'a':
-                firstPiece.moveLeft(game.grid);
-                firstPiece.drawPiece(game.drawGrid());
-                break;
-            case 'd':
-                firstPiece.moveRight(game.grid);
-                firstPiece.drawPiece(game.drawGrid());
-                break;
-            case 's':
-                if(firstPiece!==null){
-                    firstPiece.moveDown(game.grid);
-                    firstPiece.drawPiece(game.drawGrid());
+            case 'ArrowDown':
+                if(game.fPiece!==null){
+                    play.game.fPiece.moveDown(game.grid);
+                    play.game.fPiece.drawPiece(game.drawGrid());
                 };
                 break;
-            case 'w':
-                if(firstPiece!==null){
-                    firstPiece.rotate(game.grid);
-                    //firstPiece.drawPiece(game.drawGrid());
+            case 'ArrowLeft':
+                if(game.fPiece!==null){
+                    play.game.fPiece.moveLeft(game.grid);
+                    play.game.fPiece.drawPiece(game.drawGrid());
+                };
+                break;
+            case 'ArrowRight':
+                if(game.fPiece!==null){
+                    play.game.fPiece.moveRight(game.grid);
+                    play.game.fPiece.drawPiece(game.drawGrid());
+                };
+                break;
+            case 'ArrowUp':
+                if(game.fPiece!==null){
+                    play.game.fPiece.rotate(game.grid);
                 };
                 break;
 
-            };
+        };
     });
+    for(let i = 0;i<COLORS.length - 1;i++){
+        let img = new Image();
+        img.src = COLORS[i];
+    };
+    for(let i=0;i<12;i++){
+        for(let j=0;j<12;j++){
+            if(i === 0 || i === 11 ||j ===0 || j === 11){
+                contextNextPiece.drawImage(img,j*SIDE/2,i*SIDE/2,SIDE/2,SIDE/2);
+            }else{
+                contextNextPiece.fillRect(j*SIDE/2,i*SIDE/2,SIDE/2,SIDE/2);
+            };
+        };
+    };
     for(let i=0;i<ROWS;i++){
         for(let j=0;j<COLLUMS;j++){
             if(j===0 || j === COLLUMS -1 || i===0|| i===ROWS-1){
@@ -381,5 +431,6 @@ window.addEventListener('load',()=>{
                 contextGame.fillRect(j*SIDE,i*SIDE,SIDE,SIDE);
             };
         };
-    };
+    };  
 });
+    

@@ -8,18 +8,27 @@
     <link rel="stylesheet" href="styles/style.css">
 </head>
 <body>
-    <div>
-        <div style ="display: flex; justify-content: center;">
+    <div style = 'height: 100px;'></div>
+    <header style = 'height: 100px;position: fixed;'>
+     
+    </header>
+    <div id = "game">
+        <div id = 'buttons'>
+            <button type= 'button' class = 'button'>Start</button>
+            <button type= 'button' class = 'button'>Pause</button>
+            <button type= 'button' class = 'button'>Change controls</button>
+        </div>
+        <div id = "canvas-one">
             <canvas width = '480' height= '880' id='tetris'></canvas>
         </div>
         <div id='score-sPiece'>    
             <div>
-                <canvas width = '240' height= '200' style = 'border: 1px solid red;' id='next-piece'></canvas>  
-            </div>
-            <div>
                 <h1 id='score'>
                     00000000000
                 </h1>
+            </div>
+            <div>
+                <canvas width = '240' height= '240' style = 'border: 1px solid red;' id='next-piece'></canvas>  
             </div>
         </div>
             
@@ -28,3 +37,6 @@
     <script src="./scripts/script2.js"></script>
 </body>
 </html>
+<!-- HTML !-->
+
+
