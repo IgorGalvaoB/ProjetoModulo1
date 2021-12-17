@@ -44,7 +44,7 @@ const PIECES =
             [0,1,0,0],
         ],
     ];
-const COLORS = ["./images/blue.png","./images/yellow.png","./images/orange.png","./images/purple.png","./images/green.png","./images/red.png","./images/effectBlue.png","./images/grey.png", 0];
+const COLORS = ["./images/blue.png","./images/yellow.png","./images/orange.png","./images/purple.png","./images/green.png","./images/red.png","#66d9ff","./images/grey.png", 0];
 const GRID = [
     ['./images/grey.png','./images/grey.png','./images/grey.png','./images/grey.png','./images/grey.png','./images/grey.png','./images/grey.png','./images/grey.png','./images/grey.png','./images/grey.png','./images/grey.png','./images/grey.png','./images/grey.png'],
     ['./images/grey.png',0,0,0,0,0,0,0,0,0,0,'./images/grey.png'],
@@ -86,9 +86,9 @@ class Piece{
         this.color = COLORS[Math.round(Math.random()*5)];
         this.posX = this.initialPosX();
         this.posY = this.initialPosY();
-        this.posNP = this.initialPosNP();
+        this.posNP = this.initialPosNextPiece();
     };
-    initialPosNP(){
+    initialPosNextPiece(){
         if(this.shape.length === 3){
             return [80,60];
         }else if(this.shape.length === 2){
@@ -97,7 +97,6 @@ class Piece{
             return [60,40];
         };
     };
-   
     initialPosY(){
         if(this.shape.length === 3){
             return -2;
@@ -114,7 +113,6 @@ class Piece{
             return 4;
         };
     };
-   
     drawPiece(){
         let img = new Image();
         img.src = this.color;
@@ -226,6 +224,7 @@ class Game{
         this.grid = [...GRID.map(row => [...row])];//faça isso como 1 funçao, limpe o grid e xablau pra dar restart nao faça "new Game()" pq ai os botoes param de responder
         this.score = '00000000000';
         this.timeCount = 0;
+        this.arr = [];
     };
     drawGrid(){
         for(let i = 1;i< COLLUMS-1;i++){
@@ -257,7 +256,7 @@ class Game{
             for(let j = 0;j<this.fPiece.shape.length;j++){
                 if(this.fPiece.shape[i][j] === 1){
                     let yPos = this.fPiece.posY + i;
-                    if(yPos<=1){
+                    if(yPos<=0){
                         return true;
                     };
                 };
@@ -280,10 +279,12 @@ class Game{
             
             if (rowFilled(this.grid[i])){
                 //counter.push(i);
-                this.grid.splice(i, 1);
-                this.grid.splice(1,0,['./images/grey.png',0,0,0,0,0,0,0,0,0,0,'./images/grey.png']);
+                this.arr.push(i);
+                //this.grid.splice(i, 1);
+                //this.grid.splice(1,0,['./images/grey.png',0,0,0,0,0,0,0,0,0,0,'./images/grey.png']);
             };
         };
+        this.effectScore();
         if(counter>1){
             counter = counter + counter/10
         };
@@ -319,14 +320,15 @@ class Game{
     startGame(){
         this.interval = setInterval(()=>{
             this.updateGameArea();
-        },20);
+        },100);
     };
     updateGameArea(){
+        //this.sPiece.drawNextPiece();
         if(this.fPiece){
             this.fPiece.drawPiece(this.drawGrid());
             this.sPiece.drawNextPiece();
         };
-        if(this.timeCount === 25){
+        if(this.timeCount === 10){
             
             if(!this.fPiece.moveDown(game.grid)){
                 if(this.testGameOver()){
@@ -340,11 +342,30 @@ class Game{
                 this.sPiece = new Piece(this.ctx,this.ctx2);
                 
             };
-            this.timeCount=0;
+           this.timeCount=0;
         };
         
         this.timeCount++;
     };
+    effectScore(){
+        for(let i = 0; i < this.arr.length;i++){
+            this.grid.splice(this.arr[i], 1);
+            this.grid.splice(1,0,['./images/grey.png',0,0,0,0,0,0,0,0,0,0,'./images/grey.png']);
+        };
+        //setTimeout(()=>{
+            
+            for(let i = 0;i< this.arr.length;i++){
+                    this.ctx.fillStyle = COLORS[6];
+                    this.ctx.fillRect(SIDE,this.arr[i]*SIDE,(COLLUMS-WALL)*SIDE,SIDE);
+                    this.ctx.fillStyle = 'black';
+            };
+            this.arr=[];
+        //},10);
+        setTimeout(()=>{
+            this.fPiece.drawPiece(this.drawGrid());
+        },100);
+
+    }
 
 };
 
@@ -360,21 +381,23 @@ let game = new Game(contextGame,contextNextPiece);
 //let secondPiece = new Piece(contextGame,contextNextPiece);
 //game.fPiece = firstPiece;
 //game.sPiece = secondPiece;
-let play = {
-    game: game,
-};
+
 const img = new Image();
 img.src = COLORS[7];
 //-------------------------------------------------------------funcoes da pagina
 
 //----------------------------------------------------------chamada do jogo:
 function restart (){
-    play.game.pauseGame();
-    play.game.grid = [...GRID.map(row => [...row])];
-    play.game.fPiece = new Piece(play.game.ctx,play.game.ctx2);
-    play.game.sPiece = new Piece(play.game.ctx,play.game.ctx2);
-    play.game.startGame();
+    game.pauseGame();
+    game.grid = [...GRID.map(row => [...row])];
+    game.fPiece = new Piece(game.ctx,game.ctx2);
+    game.sPiece = new Piece(game.ctx,game.ctx2);
+    game.startGame();
 };
+function pause(){
+
+};
+function start(){};
 
 
 
@@ -386,25 +409,27 @@ window.addEventListener('load',()=>{
         switch(button.key){
             case 'ArrowDown':
                 if(game.fPiece!==null){
-                    play.game.fPiece.moveDown(game.grid);
-                    play.game.fPiece.drawPiece(game.drawGrid());
+                    game.fPiece.moveDown(game.grid);
+                    game.fPiece.drawPiece(game.drawGrid());
+                
                 };
                 break;
             case 'ArrowLeft':
                 if(game.fPiece!==null){
-                    play.game.fPiece.moveLeft(game.grid);
-                    play.game.fPiece.drawPiece(game.drawGrid());
+                    game.fPiece.moveLeft(game.grid);
+                    game.fPiece.drawPiece(game.drawGrid());
                 };
                 break;
             case 'ArrowRight':
                 if(game.fPiece!==null){
-                    play.game.fPiece.moveRight(game.grid);
-                    play.game.fPiece.drawPiece(game.drawGrid());
+                    game.fPiece.moveRight(game.grid);
+                    game.fPiece.drawPiece(game.drawGrid());
                 };
                 break;
             case 'ArrowUp':
                 if(game.fPiece!==null){
-                    play.game.fPiece.rotate(game.grid);
+                    game.fPiece.rotate(game.grid);
+                    game.fPiece.drawPiece(game.drawGrid());
                 };
                 break;
 
