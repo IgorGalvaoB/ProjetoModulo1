@@ -313,7 +313,7 @@ class Game{
         },200);
     };
     updateGameArea(){
-        if(tSound.currentTime >= 75.8){
+        if(tSound.currentTime >= 75.5){
             tSound.currentTime = 0;
         };
         //this.sPiece.drawNextPiece();
