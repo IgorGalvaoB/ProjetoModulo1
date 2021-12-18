@@ -1,7 +1,7 @@
 # Projeto Modulo 1 IronHack DevWeb 
 ## TETRIS
 
-O projeto é uma tentativa, espero que bem sucedida de clonar o jogo russo famoso: TETRIS. O jogo tem controles alternados entre W,A,S,D e as setas, ele pode ser jogado [Aqui](https://igorgalvaob.github.io/ProjetoModulo1/).
+O projeto é uma tentativa, espero que bem sucedida de clonar o jogo russo famoso: TETRIS. O jogo tem controles alternados entre W,A,S,D e as setas, ele pode ser jogado [**AQUI**](https://igorgalvaob.github.io/ProjetoModulo1/).
 
 ![](images/imagesREADME/Tetris.png)
 
