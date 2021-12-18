@@ -73,7 +73,7 @@ const GRID = [
 
 
 const WALL = 2;
-const SIDE = 40;
+const SIDE = 35;
 const ROWS = 20 + WALL;
 const COLLUMS = 10 + WALL;  
 
@@ -90,11 +90,11 @@ class Piece{
     };
     initialPosNextPiece(){
         if(this.shape.length === 3){
-            return [80,60];
+            return [70,53];
         }else if(this.shape.length === 2){
-            return [80,80];
+            return [70,70];
         }else{
-            return [60,40];
+            return [53,35];
         };
     };
     initialPosY(){
@@ -263,6 +263,10 @@ class Game{
                         tSound.currentTime = 0;
                         buttonPause.innerText = 'Pause';
                         buttonStart.innerText = 'Start';
+                        this.ctx.fillStyle ='white';
+                        this.ctx.font='40px Arial';
+                        this.ctx.fillText('Game Over',110,100)
+                        this.ctx.fillStyle ='black';
                         return true;
                     };
                 };
@@ -306,10 +310,10 @@ class Game{
         this.interval = setInterval(()=>{
             this.sPiece.drawNextPiece();
             this.updateGameArea();
-        },375);
+        },200);
     };
     updateGameArea(){
-        if(tSound.currentTime >= 75){
+        if(tSound.currentTime >= 75.8){
             tSound.currentTime = 0;
         };
         //this.sPiece.drawNextPiece();
@@ -317,7 +321,7 @@ class Game{
             this.fPiece.drawPiece(this.drawGrid());
             this.sPiece.drawNextPiece();
         };
-        if(this.timeCount === 1){
+        if(this.timeCount === 2){
             
             if(!this.fPiece.moveDown(game.grid)){
                 if(this.testGameOver()){
@@ -414,7 +418,6 @@ function restart(){
     game.sPiece = new Piece(game.ctx,game.ctx2);
     start();
 };
-
 
 //------------------------------------------------------------butoes/pre-desenho
 window.addEventListener('load',()=>{
