@@ -2,8 +2,8 @@
 ## TETRIS
 
 O projeto é uma tentativa, espero que bem sucedida, de clonar o jogo russo famoso: TETRIS. O jogo tem controles alternados entre W,A,S,D e as setas, ele pode ser jogado [**AQUI**](https://igorgalvaob.github.io/ProjetoModulo1/).
-
-<img src="images/imagesREADME/Tetris.png" align="left" width="100" height="100">
-
+<p align="center">
+    <img src="images/imagesREADME/Tetris.png" width="300">
+</p>
 ### Funcionalidades
 O jogo inclui audio e um pequeno efeito quando a linha é limpa, carece de maiores implementações, as quais darei atenção em futuro próximo.
